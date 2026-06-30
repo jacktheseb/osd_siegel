@@ -146,7 +146,7 @@ if (!(Test-Path $WindowsSetupScripts)) {
 
 Write-Host -ForegroundColor Green "Copy embedded registerautopilot.ps1 from WinPE to local Windows installation"
 
-$WinPERegisterAutopilotScript = "X:\OSDCloud\Scripts\registerautopilot.ps1"
+$WinPERegisterAutopilotScript = "X:\OSDCloud\Config\Scripts\registerautopilot.ps1"
 $LocalRegisterAutopilotScript = "$WindowsSetupScripts\registerautopilot.ps1"
 
 if (Test-Path $WinPERegisterAutopilotScript) {
