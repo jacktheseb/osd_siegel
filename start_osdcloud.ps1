@@ -45,6 +45,22 @@ catch {
 
 $OSConfigurations = @(
     [PSCustomObject]@{
+        DisplayName = "Windows 11 26H2 Pro (English)"
+        OSVersion   = "Windows 11"
+        OSBuild     = "26H2"
+        OSEdition   = "Pro"
+        OSLanguage  = "en-us"
+        LanguageTag = "en"
+    },
+    [PSCustomObject]@{
+        DisplayName = "Windows 11 26H2 Pro (Deutsch)"
+        OSVersion   = "Windows 11"
+        OSBuild     = "26H2"
+        OSEdition   = "Pro"
+        OSLanguage  = "de-de"
+        LanguageTag = "de"
+    },
+    [PSCustomObject]@{
         DisplayName = "Windows 11 25H2 Pro (English)"
         OSVersion   = "Windows 11"
         OSBuild     = "25H2"
@@ -56,38 +72,6 @@ $OSConfigurations = @(
         DisplayName = "Windows 11 25H2 Pro (Deutsch)"
         OSVersion   = "Windows 11"
         OSBuild     = "25H2"
-        OSEdition   = "Pro"
-        OSLanguage  = "de-de"
-        LanguageTag = "de"
-    },
-    [PSCustomObject]@{
-        DisplayName = "Windows 11 24H2 Pro (English)"
-        OSVersion   = "Windows 11"
-        OSBuild     = "24H2"
-        OSEdition   = "Pro"
-        OSLanguage  = "en-us"
-        LanguageTag = "en"
-    },
-    [PSCustomObject]@{
-        DisplayName = "Windows 11 24H2 Pro (Deutsch)"
-        OSVersion   = "Windows 11"
-        OSBuild     = "24H2"
-        OSEdition   = "Pro"
-        OSLanguage  = "de-de"
-        LanguageTag = "de"
-    },
-    [PSCustomObject]@{
-        DisplayName = "Windows 11 23H2 Pro (English)"
-        OSVersion   = "Windows 11"
-        OSBuild     = "23H2"
-        OSEdition   = "Pro"
-        OSLanguage  = "en-us"
-        LanguageTag = "en"
-    },
-    [PSCustomObject]@{
-        DisplayName = "Windows 11 23H2 Pro (Deutsch)"
-        OSVersion   = "Windows 11"
-        OSBuild     = "23H2"
         OSEdition   = "Pro"
         OSLanguage  = "de-de"
         LanguageTag = "de"
