@@ -44,7 +44,7 @@ catch {
 #region OS Configuration Arrays
 
 $OSConfigurations = @(
-    @{
+    [PSCustomObject]@{
         DisplayName = "Windows 11 25H2 Pro (English)"
         OSVersion   = "Windows 11"
         OSBuild     = "25H2"
@@ -52,7 +52,7 @@ $OSConfigurations = @(
         OSLanguage  = "en-us"
         LanguageTag = "en"
     },
-    @{
+    [PSCustomObject]@{
         DisplayName = "Windows 11 25H2 Pro (Deutsch)"
         OSVersion   = "Windows 11"
         OSBuild     = "25H2"
@@ -60,7 +60,7 @@ $OSConfigurations = @(
         OSLanguage  = "de-de"
         LanguageTag = "de"
     },
-    @{
+    [PSCustomObject]@{
         DisplayName = "Windows 11 24H2 Pro (English)"
         OSVersion   = "Windows 11"
         OSBuild     = "24H2"
@@ -68,7 +68,7 @@ $OSConfigurations = @(
         OSLanguage  = "en-us"
         LanguageTag = "en"
     },
-    @{
+    [PSCustomObject]@{
         DisplayName = "Windows 11 24H2 Pro (Deutsch)"
         OSVersion   = "Windows 11"
         OSBuild     = "24H2"
@@ -76,7 +76,7 @@ $OSConfigurations = @(
         OSLanguage  = "de-de"
         LanguageTag = "de"
     },
-    @{
+    [PSCustomObject]@{
         DisplayName = "Windows 11 23H2 Pro (English)"
         OSVersion   = "Windows 11"
         OSBuild     = "23H2"
@@ -84,7 +84,7 @@ $OSConfigurations = @(
         OSLanguage  = "en-us"
         LanguageTag = "en"
     },
-    @{
+    [PSCustomObject]@{
         DisplayName = "Windows 11 23H2 Pro (Deutsch)"
         OSVersion   = "Windows 11"
         OSBuild     = "23H2"
@@ -224,12 +224,12 @@ function Start-OSDeployment {
 
 #region XAML UI Definition
 
-[xml]$xaml = @"
+$xamlString = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="OSDCloud OS Deployment Selector"
-        Height="550"
-        Width="700"
+        Height="600"
+        Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="#F5F5F5"
@@ -351,26 +351,34 @@ function Start-OSDeployment {
                             <Border Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="6"
-                                    Padding="{TemplateBinding Padding}">
-                                <Grid>
+                                    CornerRadius="6">
+                                <Grid Margin="12,10,8,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
                                     <ContentPresenter Grid.Column="0" 
                                                     Content="{TemplateBinding SelectionBoxItem}"
                                                     ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                                     ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
                                                     VerticalAlignment="Center"/>
-                                    <ToggleButton Grid.Column="1" 
+                                    <TextBlock Grid.Column="1"
+                                               Text="▼"
+                                               Foreground="#0078D4"
+                                               FontSize="11"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"/>
+                                    <!-- Full-width clickable button -->
+                                    <ToggleButton Grid.Column="0" 
+                                                Grid.ColumnSpan="2"
                                                 Name="ToggleButton"
                                                 IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                                 Background="Transparent"
-                                                Foreground="#0078D4"
-                                                FontSize="16"
-                                                Content="▼"
-                                                Padding="8,0,0,0"/>
+                                                BorderThickness="0"
+                                                Foreground="Transparent"
+                                                Content=""
+                                                Padding="0"
+                                                Margin="0"/>
                                 </Grid>
                             </Border>
                             <Popup Name="PART_Popup"
@@ -378,17 +386,17 @@ function Start-OSDeployment {
                                     IsOpen="{TemplateBinding IsDropDownOpen}"
                                     AllowsTransparency="True"
                                     Focusable="False"
-                                    PopupAnimation="Fade">
+                                    PopupAnimation="Fade"
+                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
                                 <Border Background="White"
                                         BorderBrush="#C8C8C8"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="0"
-                                        Margin="0,2,0,0"
-                                        Effect="
-                                            {
-                                                <DropShadowEffect BlurRadius='5' ShadowDepth='2' Opacity='0.2'/>
-                                            }">
+                                        Margin="0,2,0,0">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="5" ShadowDepth="2" Opacity="0.2"/>
+                                    </Border.Effect>
                                     <ScrollViewer>
                                         <ItemsPresenter/>
                                     </ScrollViewer>
@@ -410,120 +418,134 @@ function Start-OSDeployment {
             </LinearGradientBrush>
         </Grid.Background>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="40" VerticalAlignment="Top">
+        <StackPanel Margin="25" VerticalAlignment="Top">
                 <!-- Header Section -->
-                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,30">
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,15">
                     <TextBlock Text="☁"
-                               FontSize="48"
+                               FontSize="40"
                                HorizontalAlignment="Center"
                                Foreground="#0078D4"
-                               Margin="0,0,0,15"/>
+                               Margin="0,0,0,10"/>
 
                     <TextBlock Text="OSDCloud OS Deployment"
-                               FontSize="32"
+                               FontSize="24"
                                FontWeight="Bold"
                                HorizontalAlignment="Center"
                                Foreground="#1F1F1F"
-                               Margin="0,0,0,10"/>
+                               Margin="0,0,0,5"/>
 
                     <TextBlock Text="Select and Deploy Windows OS Versions"
-                               FontSize="14"
+                               FontSize="12"
                                HorizontalAlignment="Center"
                                Foreground="#595959"
                                FontStyle="Italic"/>
                 </StackPanel>
 
                 <!-- Divider -->
-                <Border Height="2" 
+                <Border Height="1" 
                         Background="#E0E0E0" 
-                        Margin="0,0,0,30"
+                        Margin="0,0,0,15"
                         CornerRadius="1"/>
 
                 <!-- OS Selection Section -->
-                <StackPanel Spacing="20">
+                <StackPanel>
                     <!-- Label -->
                     <TextBlock Text="Available OS Versions:"
-                               FontSize="16"
+                               FontSize="13"
                                FontWeight="SemiBold"
                                Foreground="#1F1F1F"
-                               Margin="0,0,0,5"/>
+                               Margin="0,0,0,8"/>
 
                     <!-- Dropdown -->
                     <ComboBox Name="cmbOSVersion"
+                              Margin="0,0,0,12"
                               Style="{StaticResource ModernComboBoxStyle}"
-                              Background="White"/>
+                              Background="White">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <!-- Details Panel -->
                     <Border Background="#F3F3F3"
                             BorderBrush="#E0E0E0"
                             BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16"
-                            Margin="0,10,0,0">
-                        <StackPanel Spacing="8">
+                            CornerRadius="6"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <StackPanel>
                             <TextBlock Text="Configuration Details:"
-                                       FontSize="13"
+                                       FontSize="11"
                                        FontWeight="Bold"
                                        Foreground="#0078D4"
-                                       Margin="0,0,0,5"/>
+                                       Margin="0,0,0,6"/>
 
-                            <Grid>
+                            <Grid Margin="0,0,0,4">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="OS Version:"
                                            Grid.Column="0"
+                                           FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="#1F1F1F"/>
                                 <TextBlock Name="lblOSVersion"
                                            Grid.Column="1"
+                                           FontSize="11"
                                            Foreground="#595959"
-                                           Text="Select an OS version"/>
+                                           Text=""/>
                             </Grid>
 
-                            <Grid>
+                            <Grid Margin="0,0,0,4">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Build:"
                                            Grid.Column="0"
+                                           FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="#1F1F1F"/>
                                 <TextBlock Name="lblOSBuild"
                                            Grid.Column="1"
+                                           FontSize="11"
                                            Foreground="#595959"
                                            Text="-"/>
                             </Grid>
 
-                            <Grid>
+                            <Grid Margin="0,0,0,4">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Edition:"
                                            Grid.Column="0"
+                                           FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="#1F1F1F"/>
                                 <TextBlock Name="lblOSEdition"
                                            Grid.Column="1"
+                                           FontSize="11"
                                            Foreground="#595959"
                                            Text="-"/>
                             </Grid>
 
-                            <Grid>
+                            <Grid Margin="0,0,0,0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Language:"
                                            Grid.Column="0"
+                                           FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="#1F1F1F"/>
                                 <TextBlock Name="lblOSLanguage"
                                            Grid.Column="1"
+                                           FontSize="11"
                                            Foreground="#595959"
                                            Text="-"/>
                             </Grid>
@@ -534,54 +556,56 @@ function Start-OSDeployment {
                     <Border Background="#FFF4CE"
                             BorderBrush="#FFB900"
                             BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16"
-                            Margin="0,10,0,0">
-                        <StackPanel Spacing="5">
+                            CornerRadius="6"
+                            Padding="12"
+                            Margin="0,12,0,0">
+                        <StackPanel>
                             <TextBlock Text="⚠ Warning"
                                        FontWeight="Bold"
                                        Foreground="#B4009E"
-                                       FontSize="13"/>
+                                       FontSize="11"
+                                       Margin="0,0,0,4"/>
                             <TextBlock Text="OS deployment will format your system. Ensure all data is backed up before proceeding."
                                        Foreground="#595959"
-                                       FontSize="12"
+                                       FontSize="10"
                                        TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
 
                 <!-- Buttons Section -->
-                <StackPanel Orientation="Horizontal" Spacing="15" Margin="0,30,0,0" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Center">
                     <Button Name="btnDeploy"
+                            Margin="0,0,10,0"
                             Style="{StaticResource DeployButtonStyle}"
                             Width="160"
                             Height="45">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="▶ " FontSize="16" Margin="0,0,8,0"/>
-                            <TextBlock Text="Deploy" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="▶" FontSize="12" Margin="0,0,6,0"/>
+                            <TextBlock Text="Deploy" FontSize="11" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Button>
 
                     <Button Name="btnCancel"
+                            Margin="0,0,0,0"
                             Style="{StaticResource ExitButtonStyle}"
                             Width="160"
                             Height="45">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="✕ " FontSize="16" Margin="0,0,8,0"/>
-                            <TextBlock Text="Cancel" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="✕" FontSize="12" Margin="0,0,6,0"/>
+                            <TextBlock Text="Cancel" FontSize="11" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
 
                 <!-- Footer -->
-                <TextBlock Text="Cloud Deployment System © REWE digital GmbH"
-                           FontSize="10"
+                <TextBlock Text="Cloud Deployment System"
+                           FontSize="9"
                            Foreground="#8A8A8A"
                            HorizontalAlignment="Center"
-                           Margin="0,40,0,0"/>
+                           Margin="0,12,0,0"/>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
 </Window>
 "@
 
@@ -590,8 +614,9 @@ function Start-OSDeployment {
 #region Load XAML
 
 try {
-    $reader = New-Object System.Xml.XmlNodeReader $xaml
-    $window = [Windows.Markup.XamlReader]::Load($reader)
+    $stringReader = New-Object System.IO.StringReader($xamlString)
+    $xmlReader = [System.Xml.XmlReader]::Create($stringReader)
+    $window = [Windows.Markup.XamlReader]::Load($xmlReader)
 }
 catch {
     Write-Error "Failed to load XAML. Error: $($_.Exception.Message)"
@@ -626,10 +651,12 @@ try {
         [void]$cmbOSVersion.Items.Add($config)
     }
 
-    # Set the default selection
-    if ($cmbOSVersion.Items.Count -gt 0) {
-        $cmbOSVersion.SelectedIndex = 0
-    }
+    # Set the default selection to empty
+    $cmbOSVersion.SelectedIndex = -1
+    
+    # Initially disable the Deploy button
+    $btnDeploy.IsEnabled = $false
+    $btnDeploy.Opacity = 0.5
 }
 catch {
     Write-Error "Failed to wire up controls. Error: $($_.Exception.Message)"
@@ -648,6 +675,21 @@ $cmbOSVersion.Add_SelectionChanged({
         $lblOSBuild.Text = $selectedConfig.OSBuild
         $lblOSEdition.Text = $selectedConfig.OSEdition
         $lblOSLanguage.Text = if ($selectedConfig.LanguageTag -eq 'en') { 'English' } else { 'Deutsch' }
+        
+        # Enable Deploy button when OS is selected
+        $btnDeploy.IsEnabled = $true
+        $btnDeploy.Opacity = 1.0
+    }
+    else {
+        # Disable Deploy button when nothing is selected
+        $btnDeploy.IsEnabled = $false
+        $btnDeploy.Opacity = 0.5
+        
+        # Clear the details
+        $lblOSVersion.Text = ""
+        $lblOSBuild.Text = "-"
+        $lblOSEdition.Text = "-"
+        $lblOSLanguage.Text = "-"
     }
 })
 
