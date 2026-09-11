@@ -1,0 +1,557 @@
+<title>OSDCloud Deployment Console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg-deep:#0a1420;
+    --bg-panel:#101f30;
+    --bg-panel-raised:#142a3f;
+    --bg-tile:#13263a;
+    --bg-tile-hover:#183149;
+    --border:#22394f;
+    --border-soft:#1a2e42;
+    --accent:#3fa9ff;
+    --accent-dim:#1c3a52;
+    --accent-text:#bfe2ff;
+    --text-primary:#eef4fa;
+    --text-secondary:#a9bcce;
+    --text-muted:#6d8298;
+    --warn:#ffb84d;
+    --warn-bg:#2e2210;
+    --warn-border:#4a380f;
+    --success:#38c793;
+    --danger:#ff5f74;
+    --danger-dim:#3a1622;
+    --mono:'IBM Plex Mono',ui-monospace,'Cascadia Code',Consolas,monospace;
+    --sans:'IBM Plex Sans','Segoe UI',sans-serif;
+    --display:'Sora',var(--sans);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg-deep);
+    color:var(--text-primary);
+    font-family:var(--sans);
+    min-height:100vh;
+  }
+
+  .app{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    min-height:100vh;
+  }
+
+  /* ---------- Left rail: system status, mirrors the real console ---------- */
+  .rail{
+    background:var(--bg-panel);
+    border-right:1px solid var(--border-soft);
+    padding:28px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--accent),#1f6fb8);
+    display:flex;align-items:center;justify-content:center;
+    flex:none;
+  }
+  .brand-mark svg{width:18px;height:18px;}
+  .brand-name{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:.2px;
+  }
+  .brand-sub{
+    font-size:10.5px;
+    color:var(--text-muted);
+    font-family:var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  .rail-section{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .rail-label{
+    font-size:10.5px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--text-muted);
+  }
+  .info-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12px;
+    padding:7px 0;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .info-row:last-child{border-bottom:none;}
+  .info-key{color:var(--text-muted);}
+  .info-val{
+    font-family:var(--mono);
+    color:var(--text-secondary);
+    text-align:right;
+  }
+
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{
+    font-family:var(--mono);
+    font-size:10.5px;
+    padding:4px 9px;
+    border-radius:100px;
+    background:var(--accent-dim);
+    color:var(--accent-text);
+    border:1px solid #2a4d6b;
+  }
+  .chip.chip-ok{
+    background:#123326;
+    color:var(--success);
+    border-color:#1f5b41;
+  }
+
+  .rail-log{
+    margin-top:auto;
+    background:#081019;
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    padding:12px 13px;
+    font-family:var(--mono);
+    font-size:10.5px;
+    line-height:1.7;
+    color:var(--text-muted);
+  }
+  .rail-log b{color:var(--text-secondary);font-weight:500;}
+  .log-green{color:var(--success);}
+  .log-cyan{color:#5fd3ff;}
+  .log-yellow{color:var(--warn);}
+
+  /* ---------- Main: OS picker ---------- */
+  .main{
+    padding:40px 48px 32px;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+    max-width:920px;
+  }
+
+  .page-head h1{
+    font-family:var(--display);
+    font-size:26px;
+    font-weight:700;
+    margin:0 0 6px;
+    text-wrap:balance;
+  }
+  .page-head p{
+    margin:0;
+    color:var(--text-secondary);
+    font-size:13.5px;
+  }
+
+  .picker-group{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .picker-label{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--text-muted);
+  }
+  .picker-label b{
+    font-family:var(--mono);
+    font-size:10px;
+    font-weight:500;
+    color:var(--accent-text);
+    text-transform:none;
+    letter-spacing:0;
+  }
+
+  .option-row{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:1fr;
+    gap:10px;
+  }
+
+  .option{
+    position:relative;
+    text-align:left;
+    background:var(--bg-tile);
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    padding:13px 14px;
+    cursor:pointer;
+    font-family:inherit;
+    color:inherit;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .option:hover{background:var(--bg-tile-hover);border-color:#2f5573;}
+  .option:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .option:active{transform:translateY(1px);}
+  .option.selected{
+    border-color:var(--accent);
+    background:linear-gradient(180deg,#173a56,#122c42);
+    box-shadow:0 0 0 1px var(--accent) inset, 0 8px 20px -12px rgba(63,169,255,.45);
+  }
+
+  .option-text{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
+  .option-title{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:14.5px;
+  }
+  .option-sub{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--text-muted);
+  }
+
+  .flag{
+    width:24px;height:17px;
+    border-radius:3px;
+    flex:none;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08);
+    overflow:hidden;
+  }
+  .flag-en{background:linear-gradient(180deg,#1a3d7c 0 34%, #fff 34% 66%, #c8102e 66% 100%);}
+  .flag-de{background:linear-gradient(180deg,#000 0 33.3%, #d00 33.3% 66.6%, #ffce00 66.6% 100%);}
+
+  .option-check{
+    flex:none;
+    width:17px;height:17px;
+    border-radius:50%;
+    border:1.5px solid #3a5773;
+    background:var(--bg-panel);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s ease;
+  }
+  .option.selected .option-check{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .option-check svg{width:10px;height:10px;opacity:0;transition:opacity .1s ease;}
+  .option.selected .option-check svg{opacity:1;}
+
+  /* ---------- Computed result ---------- */
+  .result{
+    background:var(--bg-panel);
+    border:1px solid var(--border-soft);
+    border-radius:12px;
+    padding:16px 20px;
+  }
+  .result-head{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:10.5px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--text-muted);
+    margin-bottom:11px;
+  }
+  .result-head svg{width:12px;height:12px;color:var(--success);}
+  .result-name{
+    font-family:var(--display);
+    font-size:16.5px;
+    font-weight:700;
+    margin-bottom:12px;
+  }
+  .result-fields{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .field{
+    background:var(--bg-panel-raised);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+  }
+  .field-key{
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-muted);
+    margin-bottom:3px;
+  }
+  .field-val{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--accent-text);
+  }
+
+  .actions{display:flex;gap:10px;}
+  .btn{
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:600;
+    padding:11px 22px;
+    border-radius:8px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:filter .12s ease, transform .08s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-deploy{
+    background:linear-gradient(135deg,#2fbd85,#1f9c6d);
+    color:#04140d;
+  }
+  .btn-deploy:hover{filter:brightness(1.08);}
+  .btn-deploy:disabled{
+    background:var(--bg-panel-raised);
+    color:var(--text-muted);
+    cursor:not-allowed;
+    filter:none;
+  }
+  .btn-cancel{
+    background:transparent;
+    border-color:var(--border);
+    color:var(--text-secondary);
+  }
+  .btn-cancel:hover{border-color:var(--danger);color:var(--danger);}
+
+  .warn-box{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background:var(--warn-bg);
+    border:1px solid var(--warn-border);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:12px;
+    color:#e8c98a;
+    line-height:1.5;
+  }
+  .warn-box svg{flex:none;margin-top:1px;width:15px;height:15px;color:var(--warn);}
+  .warn-box b{color:var(--warn);}
+
+  /* ---------- Confirm modal ---------- */
+  .modal-backdrop{
+    position:fixed;inset:0;
+    background:rgba(5,10,16,.72);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:10;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    width:380px;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+  }
+  .modal h2{
+    font-family:var(--display);
+    font-size:16px;
+    margin:0 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .modal h2 svg{width:17px;height:17px;color:var(--danger);}
+  .modal p{
+    font-size:13px;
+    color:var(--text-secondary);
+    line-height:1.6;
+    margin:0 0 18px;
+  }
+  .modal p b{color:var(--text-primary);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;}
+
+  @media (max-width:720px){
+    .app{grid-template-columns:1fr;}
+    .rail{flex-direction:row;flex-wrap:wrap;padding:18px 20px;}
+    .rail-log{display:none;}
+    .main{padding:28px 20px;}
+    .option-row{grid-auto-flow:row;}
+    .result-fields{grid-template-columns:repeat(2,1fr);}
+    .actions{width:100%;}
+    .btn{flex:1;}
+  }
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 17a4 4 0 0 1 .4-7.98A5.5 5.5 0 0 1 17 9.5a4 4 0 0 1-.5 7.98" stroke="#03111d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">OSDCloud</div>
+        <div class="brand-sub">WinPE Deployment Console</div>
+      </div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Target Hardware</div>
+      <div class="info-row"><span class="info-key">Model</span><span class="info-val">ProDesk 600 G6</span></div>
+      <div class="info-row"><span class="info-key">Product ID</span><span class="info-val">8XX2</span></div>
+      <div class="info-row"><span class="info-key">Firmware</span><span class="info-val">UEFI / SecureBoot</span></div>
+    </div>
+
+    <div class="rail-section">
+      <div class="rail-label">Detected</div>
+      <div class="chip-row">
+        <span class="chip chip-ok">Driver Pack ✓</span>
+        <span class="chip chip-ok">HPIA ✓</span>
+        <span class="chip">TPM 2.0</span>
+      </div>
+    </div>
+
+    <div class="rail-log">
+      <div><span class="log-green">[PreOS]</span> OSD module ready</div>
+      <div><span class="log-cyan">[Config]</span> Awaiting OS selection…</div>
+      <div><span class="log-yellow">[Info]</span> ZTI &amp; Firmware update armed</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <h1>Welches System soll installiert werden?</h1>
+      <p>Version und Sprache wählen — die Deployment&#8209;Konfiguration für Start&#8209;OSDCloud wird daraus automatisch zusammengesetzt.</p>
+    </div>
+
+    <div class="picker-group">
+      <div class="picker-label">Windows&#8209;Version</div>
+      <div class="option-row" id="versionRow"></div>
+    </div>
+
+    <div class="picker-group">
+      <div class="picker-label">Sprache</div>
+      <div class="option-row" id="langRow"></div>
+    </div>
+
+    <div class="result">
+      <div class="result-head">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Zusammengestellte Konfiguration
+      </div>
+      <div class="result-name" id="resultName">—</div>
+      <div class="result-fields">
+        <div class="field"><div class="field-key">OS Version</div><div class="field-val" id="fVersion">—</div></div>
+        <div class="field"><div class="field-key">Build</div><div class="field-val" id="fBuild">—</div></div>
+        <div class="field"><div class="field-key">Edition</div><div class="field-val" id="fEdition">—</div></div>
+        <div class="field"><div class="field-key">Sprache</div><div class="field-val" id="fLang">—</div></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-cancel" id="btnCancel">Abbrechen</button>
+        <button class="btn btn-deploy" id="btnDeploy" disabled>Deploy starten</button>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 1.5 21h21L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r=".9" fill="currentColor"/></svg>
+      <div><b>Achtung:</b> Die Installation formatiert das Zielsystem vollständig. Alle Daten gehen unwiderruflich verloren — vor dem Start sichern.</div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h2><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 1.5 21h21L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r=".9" fill="currentColor"/></svg>Deployment bestätigen</h2>
+    <p>Soll <b id="modalOsName">—</b> jetzt installiert werden?<br>Das System wird formatiert und automatisch neu gestartet.</p>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="modalNo">Zurück</button>
+      <button class="btn btn-deploy" id="modalYes">Ja, installieren</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mirrors $OSConfigurations in start_osdcloud.ps1 — every combination is
+  // valid, so version and language are picked independently and combined.
+  const versions = [
+    {build:"26H2", note:"aktuellstes Feature-Update"},
+    {build:"25H2", note:"Vorgänger-Release"},
+  ];
+  const languages = [
+    {code:"en", tag:"en-us", label:"English", flag:"en"},
+    {code:"de", tag:"de-de", label:"Deutsch", flag:"de"},
+  ];
+  const edition = "Pro"; // einzige derzeit hinterlegte Edition
+
+  const versionRow = document.getElementById('versionRow');
+  const langRow = document.getElementById('langRow');
+  const btnDeploy = document.getElementById('btnDeploy');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalOsName = document.getElementById('modalOsName');
+
+  let selectedVersion = 0;
+  let selectedLang = 0;
+
+  function renderOptions(row, items, selectedIdx, onPick, kind){
+    row.innerHTML = '';
+    items.forEach((item, i) => {
+      const opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'option' + (i === selectedIdx ? ' selected' : '');
+      const flag = kind === 'lang' ? `<div class="flag flag-${item.flag}"></div>` : '';
+      opt.innerHTML = `
+        ${flag}
+        <div class="option-text">
+          <div class="option-title">${kind === 'lang' ? item.label : 'Windows 11 ' + item.build}</div>
+          <div class="option-sub">${kind === 'lang' ? item.tag : item.note}</div>
+        </div>
+        <div class="option-check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#03111d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+      opt.addEventListener('click', () => onPick(i));
+      row.appendChild(opt);
+    });
+  }
+
+  function render(){
+    renderOptions(versionRow, versions, selectedVersion, i => { selectedVersion = i; render(); }, 'version');
+    renderOptions(langRow, languages, selectedLang, i => { selectedLang = i; render(); }, 'lang');
+
+    const v = versions[selectedVersion];
+    const l = languages[selectedLang];
+
+    document.getElementById('resultName').textContent = `Windows 11 ${v.build} ${edition} (${l.label})`;
+    document.getElementById('fVersion').textContent = 'Windows 11';
+    document.getElementById('fBuild').textContent = v.build;
+    document.getElementById('fEdition').textContent = edition;
+    document.getElementById('fLang').textContent = `${l.tag} · ${l.label}`;
+    btnDeploy.disabled = false;
+  }
+
+  btnDeploy.addEventListener('click', () => {
+    const v = versions[selectedVersion];
+    const l = languages[selectedLang];
+    modalOsName.textContent = `Windows 11 ${v.build} ${edition} (${l.label})`;
+    modalBackdrop.classList.add('open');
+  });
+
+  document.getElementById('modalNo').addEventListener('click', () => modalBackdrop.classList.remove('open'));
+  document.getElementById('modalYes').addEventListener('click', () => {
+    modalBackdrop.classList.remove('open');
+    document.getElementById('resultName').textContent = 'Deployment gestartet — Fenster schließt…';
+  });
+  document.getElementById('btnCancel').addEventListener('click', () => {
+    btnDeploy.disabled = true;
+    document.getElementById('resultName').textContent = 'Abgebrochen';
+  });
+
+  render();
+</script>
