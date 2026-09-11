@@ -118,7 +118,12 @@ function Start-OSDeployment {
         #   [PreOS] Update and Import Modules
         #=======================================================================
         Write-Host -ForegroundColor Green "Updating OSD PowerShell Module"
-        Install-Module OSD -Force -ErrorAction Stop
+        try {
+            Install-Module OSD -Force -SkipPublisherCheck -ErrorAction Stop
+        }
+        catch {
+            Write-Host -ForegroundColor Yellow "OSD Module installation failed, attempting to use existing installation..."
+        }
 
         Write-Host -ForegroundColor Green "Importing OSD PowerShell Module"
         Import-Module OSD -Force -ErrorAction Stop
