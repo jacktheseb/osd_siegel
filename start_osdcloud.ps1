@@ -363,9 +363,10 @@ $xamlString = @"
                                                     ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
                                                     VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1"
-                                               Text="▼"
+                                               Text="v"
                                                Foreground="#0078D4"
-                                               FontSize="11"
+                                               FontSize="14"
+                                               FontWeight="Bold"
                                                VerticalAlignment="Center"
                                                HorizontalAlignment="Center"/>
                                     <!-- Full-width clickable button -->
@@ -421,11 +422,12 @@ $xamlString = @"
         <StackPanel Margin="25" VerticalAlignment="Top">
                 <!-- Header Section -->
                 <StackPanel HorizontalAlignment="Center" Margin="0,0,0,15">
-                    <TextBlock Text="☁"
+                    <TextBlock Text="[CLOUD]"
                                FontSize="40"
                                HorizontalAlignment="Center"
                                Foreground="#0078D4"
-                               Margin="0,0,0,10"/>
+                               Margin="0,0,0,10"
+                               FontWeight="Bold"/>
 
                     <TextBlock Text="OSDCloud OS Deployment"
                                FontSize="24"
@@ -580,10 +582,7 @@ $xamlString = @"
                             Style="{StaticResource DeployButtonStyle}"
                             Width="160"
                             Height="45">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="▶" FontSize="12" Margin="0,0,6,0"/>
-                            <TextBlock Text="Deploy" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel>
+                        <TextBlock Text="Deploy" FontSize="11" FontWeight="SemiBold"/>
                     </Button>
 
                     <Button Name="btnCancel"
@@ -591,10 +590,7 @@ $xamlString = @"
                             Style="{StaticResource ExitButtonStyle}"
                             Width="160"
                             Height="45">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock Text="✕" FontSize="12" Margin="0,0,6,0"/>
-                            <TextBlock Text="Cancel" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel>
+                        <TextBlock Text="Cancel" FontSize="11" FontWeight="SemiBold"/>
                     </Button>
                 </StackPanel>
 
@@ -708,6 +704,8 @@ $btnDeploy.Add_Click({
         if ($confirmResult -eq "Yes") {
             $window.Close()
             Start-OSDeployment -Config $selectedConfig
+
+            Read-Host -Prompt "Press Enter to exit"
         }
     }
     else {
