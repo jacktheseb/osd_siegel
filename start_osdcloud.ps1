@@ -101,10 +101,19 @@ $OSConfigurations = @(
 function Start-OSDeployment {
     param (
         [Parameter(Mandatory = $true)]
-        [hashtable]$Config
+        $Config
     )
 
     try {
+        # Convert PSCustomObject to hashtable if needed
+        if ($Config -is [System.Management.Automation.PSCustomObject]) {
+            $ConfigHash = @{}
+            $Config | Get-Member -MemberType NoteProperty | ForEach-Object {
+                $ConfigHash[$_.Name] = $Config.($_.Name)
+            }
+            $Config = $ConfigHash
+        }
+
         #=======================================================================
         #   [PreOS] Update and Import Modules
         #=======================================================================
