@@ -248,7 +248,7 @@ function New-OptionButton {
     $titleBlock.Text = $Title
     $titleBlock.FontWeight = 'Bold'
     $titleBlock.FontSize = 14
-    $titleBlock.Foreground = [System.Windows.Media.Brushes]::White
+    $titleBlock.Foreground = [System.Windows.Media.Brushes]::Black
     [void]$panel.Children.Add($titleBlock)
 
     $subBlock = New-Object System.Windows.Controls.TextBlock
@@ -256,7 +256,7 @@ function New-OptionButton {
     $subBlock.FontSize = 10
     $subBlock.Margin = '0,3,0,0'
     $subBlock.Foreground = New-Object System.Windows.Media.SolidColorBrush(
-        [System.Windows.Media.ColorConverter]::ConvertFromString('#8FA4B8')
+        [System.Windows.Media.ColorConverter]::ConvertFromString('#666666')
     )
     [void]$panel.Children.Add($subBlock)
 
@@ -279,28 +279,28 @@ $xamlString = @"
         Width="700"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="#0A1420"
+        Background="#FFFFFF"
         Topmost="True"
         WindowStyle="SingleBorderWindow">
 
     <Window.Resources>
 
         <!-- Palette -->
-        <SolidColorBrush x:Key="BgPanel" Color="#101F30"/>
-        <SolidColorBrush x:Key="BgPanelRaised" Color="#142A3F"/>
-        <SolidColorBrush x:Key="BgTile" Color="#13263A"/>
-        <SolidColorBrush x:Key="BgTileHover" Color="#183149"/>
-        <SolidColorBrush x:Key="BorderColor" Color="#22394F"/>
-        <SolidColorBrush x:Key="BorderSoft" Color="#1A2E42"/>
-        <SolidColorBrush x:Key="Accent" Color="#3FA9FF"/>
-        <SolidColorBrush x:Key="AccentText" Color="#BFE2FF"/>
-        <SolidColorBrush x:Key="TextPrimary" Color="#EEF4FA"/>
-        <SolidColorBrush x:Key="TextSecondary" Color="#A9BCCE"/>
-        <SolidColorBrush x:Key="TextMuted" Color="#6D8298"/>
+        <SolidColorBrush x:Key="BgPanel" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="BgPanelRaised" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BgTile" Color="#F8F8F8"/>
+        <SolidColorBrush x:Key="BgTileHover" Color="#E8E8E8"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#CCCCCC"/>
+        <SolidColorBrush x:Key="BorderSoft" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="Accent" Color="#0066CC"/>
+        <SolidColorBrush x:Key="AccentText" Color="#0052A3"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#1A1A1A"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#555555"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#888888"/>
         <SolidColorBrush x:Key="Danger" Color="#FF5F74"/>
-        <SolidColorBrush x:Key="WarnBg" Color="#2E2210"/>
-        <SolidColorBrush x:Key="WarnBorder" Color="#4A380F"/>
-        <SolidColorBrush x:Key="WarnText" Color="#E8C98A"/>
+        <SolidColorBrush x:Key="WarnBg" Color="#FFF5E6"/>
+        <SolidColorBrush x:Key="WarnBorder" Color="#E6C200"/>
+        <SolidColorBrush x:Key="WarnText" Color="#8B6914"/>
 
         <!-- Segmented option (used for both Version and Language rows) -->
         <Style x:Key="SegmentedOptionStyle" TargetType="RadioButton">
@@ -337,11 +337,11 @@ $xamlString = @"
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="OptBorder" Property="Background" Value="{StaticResource BgTileHover}"/>
-                                <Setter TargetName="OptBorder" Property="BorderBrush" Value="#2F5573"/>
+                                <Setter TargetName="OptBorder" Property="BorderBrush" Value="#9999CC"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="OptBorder" Property="BorderBrush" Value="{StaticResource Accent}"/>
-                                <Setter TargetName="OptBorder" Property="Background" Value="#173A56"/>
+                                <Setter TargetName="OptBorder" Property="Background" Value="#E3F2FD"/>
                                 <Setter TargetName="Check" Property="Fill" Value="{StaticResource Accent}"/>
                                 <Setter TargetName="Check" Property="Stroke" Value="{StaticResource Accent}"/>
                             </Trigger>
