@@ -51,8 +51,9 @@ $OSEdition     = "Pro"
 $OSLicense     = "Retail"
 
 $OSVersions = @(
-    [PSCustomObject]@{ Build = "26H2"; Note = "Aktuellstes Feature-Update" }
-    [PSCustomObject]@{ Build = "25H2"; Note = "Vorgaenger-Release" }
+    #[PSCustomObject]@{ Build = "26H2"; Note = "Aktuellstes Feature-Update" }
+    [PSCustomObject]@{ Build = "25H2"; Note = "Aktueller-Release" }
+    [PSCustomObject]@{ Build = "24H2"; Note = "Vorgaenger-Release" }
 )
 
 $OSLanguages = @(
@@ -457,7 +458,7 @@ $xamlString = @"
             <WrapPanel Name="spLanguageOptions" Margin="0,0,0,14"/>
 
             <Border Background="{StaticResource BgPanel}" BorderBrush="{StaticResource BorderSoft}" BorderThickness="1" CornerRadius="10" Padding="16">
-                <StackPanel>
+                <StackPanel>f
                     <TextBlock Text="ZUSAMMENGESTELLTE KONFIGURATION" FontSize="9.5" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" Margin="0,0,0,8"/>
                     <TextBlock Name="lblResultName" Text="-" FontSize="15" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,12" TextWrapping="Wrap"/>
 
@@ -590,7 +591,7 @@ function Update-ResultPanel {
     $lblFieldVersion.Text = $OSVersionName
     $lblFieldBuild.Text   = $v.Build
     $lblFieldEdition.Text = $OSEdition
-    $lblFieldLang.Text    = "$($l.Tag) . $($l.Label)"
+    $lblFieldLang.Text    = "$($l.Label)"
     $btnDeploy.IsEnabled  = $true
 }
 
