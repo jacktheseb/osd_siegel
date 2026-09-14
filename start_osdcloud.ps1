@@ -591,7 +591,7 @@ function Update-ResultPanel {
     $lblFieldVersion.Text = $OSVersionName
     $lblFieldBuild.Text   = $v.Build
     $lblFieldEdition.Text = $OSEdition
-    $lblFieldLang.Text    = "$($l.Tag) . $($l.Label)"
+    $lblFieldLang.Text    = "$($l.Label)"
     $btnDeploy.IsEnabled  = $true
 }
 
